@@ -1,9 +1,9 @@
 var express = require("express");
 
 require("dotenv").config({
-    
-   silent:true
-    
+
+  silent: true
+
 });
 
 var path = require("path");
@@ -25,46 +25,81 @@ app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 //parse all requests as JSON in the app instance
 
+var books = require('google-books-search');
+//load Google Books API wrapper for Node JS
+
 var db;
 
-mongodb.MongoClient.connect(process.env.DB_URL, function(err,database){
-    
-    if(err){
-        
-        console.log(err);
-        
-        process.exit(1);
-        
-    }
-    
-    db = database;
-    
-    console.log("successfully connected to the database");
-    
-    var server = app.listen(process.env.PORT || 8080, function(){
-        
-        var port = server.address().port;
-        
-        console.log("App is now running on port", port);
-        
-        
-    });
-    
-    /*RESTful API Web services*/
-    
-    function handleError(res,reason, message, code){
+mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
+
+  if (err) {
+
+    console.log(err);
+
+    process.exit(1);
+
+  }
+
+  db = database;
+
+  console.log("successfully connected to the database");
+
+  var server = app.listen(process.env.PORT || 8080, function() {
+
+    var port = server.address().port;
+
+    console.log("App is now running on port", port);
+
+
+  });
+
+  /*RESTful API Web services*/
+
+  function handleError(res, reason, message, code) {
     //generic error handling function used by all endpoints    
+
+    console.log("ERROR: " + reason);
+
+    res.status(code || 500).json({
+
+      "error": message
+
+    });
+
+  } //function handleError
+
+
+  app.get("/getbook/:query", function(req,res){
+  //retrieve data from Google Books API using the query URL parameter  
+  
+    var options = {
+      
+      limit: 1
+      
+    };
+      
+     books.search(req.params.query, options, function(error,results){
+         
+         if(error){
+             
+             console.log(error);
+             
+         } else {
+             
+             console.log(results);
+             
+             res.status(200).json(results);
+             
+             
+         }
+         
+         
+     });
         
-        console.log("ERROR: " + reason);
-    
-        res.status(code || 500).json({
-        
-        "error": message
-        
-        });
-    
-    }//function handleError
-    
-    
-    
-});//mongodb.MongoCLient.connect
+      
+      
+  });
+  
+
+}); //mongodb.MongoCLient.connect
+

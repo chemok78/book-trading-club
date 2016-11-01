@@ -1,0 +1,34 @@
+body {
+    
+    padding-top:90px;
+    padding-bottom: 60px;
+    font-family: 'Alegreya Sans', sans-serif;
+    
+}
+
+footer {
+    
+    background-color: #bdc3c7;
+    color:white;
+    position:fixed;
+    bottom:0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 100%;
+    font-size:0.8em;
+    
+    
+}
+
+.navbar {
+    
+    background-color: #6DA1C9;
+    
+}
+
+.navbar-brand {
+    
+    color: white !important;
+    font-size:24px;
+    
+}

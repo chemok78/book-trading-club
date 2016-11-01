@@ -1,0 +1,14 @@
+<div class="container">
+    <h2>My Books</h2>
+    <hr> 
+    <form class="form-inline" name="addBookForm">
+        <div class="form-group">
+            <input type="text" class="form-control" id="bookInput" placeholder="Enter book to add" ng-model="bookQuery">
+        </div>
+        <button type="submit" class="btn btn-default btn-primary" ng-click="addBook(bookQuery)">Add</button>
+    </form>
+    <br>
+    <div class="container well text-center">
+        {{book}}
+    </div>
+</div>

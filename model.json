@@ -1,0 +1,52 @@
+USERS COLLECTION
+
+{
+    "_id": "12345678",
+    "name": "John",
+    "email": "hello@gmail.com",
+    "city": "Rotterdam",
+    "state": "Zuid Holland",
+    "books": {
+        
+        {"id": "132132", "title": "javascript development", "request": "Paul", "accepted": false},
+        
+        {"id": "13232112", "title": "python development"}
+        
+    }
+    
+}
+
+BOOKS COLLECTION
+
+{
+    "_id": "12345667856",
+    "title": "javascript development",
+    "thumbnail": "hello.jpg",
+    "users": {
+        
+        {"name": "Pietje", "id": "63217863182"},
+        
+        {"name": "Henkie", "id": "1267281621"}
+    
+    }
+    
+}
+
+many to many relationship
+-a user can have multiple books
+-a book can have multiple users
+
+{
+    "title": "javascript development",
+    "thumbnail": "hello.jpg",
+    "users": {
+     
+        {"name": "John"},
+        
+        {"name": "Peter", "requests": "Michael"}"
+        
+     
+    }
+        
+}
+

@@ -1,0 +1,22 @@
+Links + views:
+
+-All books: all the books that the users have added
+   *function to request to trade (including which book i want to trade)
+-My books: the books that I've have added
+   *send out requests + status
+   *incoming requests + status + a function to approve
+-User profile page
+   *username
+   *emailaddress
+   *add: name, city, state
+   
+-Homepage: explaining the features
+
+RESTful API's to interact with database or third party service
+
+-Add book with search query (uses Google API) + belonging to which user?
+-Delete a book belonging to a user (means, delete the relationship of the book + user, and if book has no user: delete it from complete list)
+-send a trade request to a user for a specific book.
+-accept a trade request for a specific book for a user.
+   
+   
