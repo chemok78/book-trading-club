@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="booksApp">
+<html lang="en" ng-app="booksApp" ng-controller="mainController">
 
   <head>
     <meta charset="utf-8">
@@ -32,7 +32,12 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="#/">Home</a></li>
+            <li><a href="#/">Home</a></li>
+            <li ng-show="loggedIn === true"><a href="/#allbooks">All Books</a></li>
+            <li ng-show="loggedIn === true"><a href="/#mybooks">My Books</a></li>
+            <li ng-show="loggedIn === true"><a href="/#profile">My Profile</a></li>
+            <li ng-show="loggedIn === true"><a href="/logout">Sign Out</a></li>
+            <li ng-hide="loggedIn === true"><a href="/auth/facebook" target="_top">Login with Facebook</a></li>
           </ul>
         </div>
       </div>

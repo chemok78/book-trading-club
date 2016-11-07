@@ -1,0 +1,13 @@
+{ id: '10154053694878424',
+  username: undefined,
+  displayName: 'Che Mok',
+  name: 
+   { familyName: undefined,
+     givenName: undefined,
+     middleName: undefined },
+  gender: undefined,
+  profileUrl: undefined,
+  provider: 'facebook',
+  _raw: '{"name":"Che Mok","id":"10154053694878424"}',
+  _json: { name: 'Che Mok', id: '10154053694878424' } }
+

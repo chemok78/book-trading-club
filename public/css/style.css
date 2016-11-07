@@ -23,6 +23,15 @@ footer {
 .navbar {
     
     background-color: #6DA1C9;
+    color: white;
+    
+    
+}
+
+#myNavbar > ul > li > a {
+    
+    color: white;
+    
     
 }
 

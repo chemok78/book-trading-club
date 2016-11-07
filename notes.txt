@@ -18,5 +18,15 @@ RESTful API's to interact with database or third party service
 -Delete a book belonging to a user (means, delete the relationship of the book + user, and if book has no user: delete it from complete list)
 -send a trade request to a user for a specific book.
 -accept a trade request for a specific book for a user.
-   
+
+Next steps:
+
+    After passport login: check if user is in database, if not add user to it. That's it
+    Build a check logged in function. Put it in a service.
+    Add a login and logout link to the navigation menu. (need a function that checks server side if a user is logged in)
+    Make maincontroller for the index file / specific controllers for views using NgRoute
+    Attach user to mainController
+    Show links after log in: mybooks, profile and all books
+    Profile: retrieve user from database. Make an update function
+    Mybooks: make an add books funciton that adds users touser
    
