@@ -38,6 +38,20 @@ angular.module("booksApp", ['ngRoute'])
         
     };
     
+    this.updateBook = function(user){
+    //called from MyBooks controller with userObject  
+        
+        return $http.post("/updatebooks", user);
+        //post to /updatebooks route with user as parameter
+            
+    };//this.enterBook
+    
+    this.allBooks = function(){
+        
+        return $http.get("/getallbooks");  
+        
+    };
+    
     
 })
 .service("Login", function($http){
@@ -125,23 +139,33 @@ angular.module("booksApp", ['ngRoute'])
 .controller('MyBooksController', function($scope, Books){
 //controller for the Mybooks profile page
 
-        $scope.addBook = function(query){
+        $scope.retrieveBooks = function(query){
             
             Books.retrieveBook(query)
             
                 .then(function(response){
-                
+                //response.data is an array of book objects/
+                //loop through array and select items needed
+                    
+                    var booksArray = [];
+                    
+                    response.data.forEach(function(item){
+                       
                     var bookObject = {
                         
-                        "title": response.data[0].title,
-                        "subtitle": response.data[0].subtitle,
-                        "authors": response.data[0].authors,
-                        "description": response.data[0].description,
-                        "link": response.data[0].link,
-                        "thumbnail": response.data[0].thumbnail
-                    };
+                        "title": item.title,
+                        "subtitle": item.subtitle,
+                        "authors": item.authors,
+                        "description": item.description,
+                        "link": item.link,
+                        "thumbnail": item.thumbnail
+                    };        
+                      
+                        booksArray.push(bookObject);
+                        
+                    });
 
-                    $scope.book = bookObject;
+                    $scope.books = booksArray;
                     //array of objects, every book is an object
                     
                 }, function(response){
@@ -152,11 +176,71 @@ angular.module("booksApp", ['ngRoute'])
             
             
         };
+        
+        $scope.addBook = function(book){
+        //function to add a book from front-end
+        //book paramater sends a book object
+        
+            $scope.userObject.books.push(book);
+            //add the book object to the books array in the userObject initialized in $scope in mainController
+            
+            Books.updateBook($scope.userObject)
+            //send userObject with book added to the Books service to call RESTful API
+                .then(function(response){
+                    
+                    console.log(response.data);   
+                    
+                }, function(response){
+                    
+                    console.log("failed to add book");
+                    
+                });
+            
+            
+        };
+        
+        
+        $scope.removeBook = function(book){
+        //called from front-end with book to be deleted from user
+            
+            $scope.userObject.books.forEach(function(item,index){
+            //edit scope userObject first before saving to database
+            //loop through the book object and check if book titles are the same.
+               
+               if(item.title === book.title){
+                   
+                   $scope.userObject.books.splice(index,1);
+                   //delete book from scope.userObject first
+                   
+                   Books.updateBook($scope.userObject);
+                   
+                   
+               } 
+                
+            });
+            
+            
+        };
 
     
 })
-.controller('AllBooksController', function($scope){
+.controller('AllBooksController', function($scope, Books){
     
+    Books.allBooks()
+    //use allBooks to call server side RESTful API to retrieve all books in database
+    //returns an array of objects, each object is a book including id and name of user
+        .then(function(response){
+            
+            console.log(response.data);
+            
+            $scope.allUserBooks = response.data;
+            //bind allUserBooks array to the scope
+            
+        }, function(response){
+            
+            console.log("Error retrieving all books");
+            
+        })
     
     
     

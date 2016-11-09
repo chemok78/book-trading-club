@@ -1,14 +1,35 @@
 <div class="container">
     <h2>{{userObject.name}}'s Books</h2>
+        <form class="form-inline" name="addBookForm">
+            <div class="form-group">
+                <input type="text" class="form-control" id="bookInput" placeholder="Enter book to add" ng-model="bookQuery">
+            </div>
+            <button type="submit" class="btn btn-default btn-primary" ng-click="retrieveBooks(bookQuery)">Search For Books</button>
+        </form>
     <hr> 
-    <form class="form-inline" name="addBookForm">
-        <div class="form-group">
-            <input type="text" class="form-control" id="bookInput" placeholder="Enter book to add" ng-model="bookQuery">
+    <div class="row">
+         <div class="col-md-6 container">
+            <h4>Your Books</h4>
+             <ul class="list-group">
+                <li ng-repeat="book in userObject.books" class="list-group-item">
+                    <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
+                    <a href="{{book.link}}" target="_blank" >{{book.title}}</a>
+                    <p>Author: {{book.authors[0]}}</p>
+                    <button type="submit" class="btn btn-default btn-warning" ng-click="removeBook(book)">Delete Book</button>
+                </li>
+            </ul>
         </div>
-        <button type="submit" class="btn btn-default btn-primary" ng-click="addBook(bookQuery)">Add</button>
-    </form>
-    <br>
-    <div class="container well text-center">
-        {{book}}
+        <div class="col-md-6 container">
+                <h4>Books you can add (Use search above)</h4>
+                <ul class="list-group">
+                <li ng-repeat="book in books" class="list-group-item">
+                    <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
+                    <a href="{{book.link}}" target="_blank" >{{book.title}}</a>
+                    <p>Author: {{book.authors[0]}}</p>
+                    <button type="submit" class="btn btn-default btn-primary" ng-click="addBook(book)">Add Book</button>
+                </li>
+            </ul>
+        </div>
     </div>
+
 </div>

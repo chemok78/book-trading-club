@@ -1,0 +1,13 @@
+<div class="container">
+    <h2>All Books</h2>
+    <hr>
+        <ul class="list-group">
+            <li ng-repeat="book in allUserBooks" class="list-group-item">
+                <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
+                <a href="{{book.link}}" target="_blank" >{{book.title}}</a>
+                <p>Author: {{book.authors[0]}}</p>
+                <p>Belongs to: {{book.name}}</p>
+                <button type="submit" class="btn btn-default btn-warning" ng-click="">Trade Book</button>
+            </li>
+        </ul>
+</div>

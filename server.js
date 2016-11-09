@@ -327,18 +327,89 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
         
       }
       
-      
     });//db.collection
     
   });
-
+  
+  app.post("/updatebooks", function(req,res){
+  //called from Books service and MyBooks controller
+  //used for adding books + removing books as well
+    
+    db.collection(BOOKS_COLLECTION).updateOne({id:req.user.id}, req.body, function(err,doc){
+    //find user in database and replace user with userObject from front-end $scope with added book
+      
+      if(err){
+        
+        console.log("error updating user with book(s)");
+        
+      } else {
+        
+        res.status(200).end;
+        
+      }
+      
+      
+    });
+    
+  });
+  
+  app.get('/getallbooks', function(req,res){
+    
+    //retrieve all documents from collection in database
+    
+    //return that to front end and bind to scope
+    
+    db.collection(BOOKS_COLLECTION).find({}).toArray(function(err,doc){
+      
+      if(err){
+        
+        console.log("Error retrieving all books");
+        
+      } else {
+        //loop through doc array, every element/item is a userObject
+        
+        var booksArray = [ ];
+        
+        doc.forEach(function(item, index){
+        //every item is a userObject  
+          
+          var booksObject = {};
+          
+          if(item.books.length > 0){
+          //loop through the books array of every user if it's not empty
+          
+            for(var i= 0; i < item.books.length; i++){
+            
+               booksObject = item.books[i];
+               //set booksObject to item.books from userObject
+               booksObject.id = item.id;
+               //add id from userObject to booksObject
+               booksObject.name = item.name;
+               //add name from userObject to booksObject
+               
+               booksArray.push(booksObject);
+            
+            }//  for(var i= 0; i < item.books.length
+          
+         } //if(item.books.length > 0
+          
+        }); //doc.forEach(function(item, index)
+        
+        res.status(200).json(booksArray);
+        
+      } //if, else
+      
+    }); //db.collection(BOOKS_COLLECTION)
+    
+    
+  }); //app.get('/getallbooks'
 
   app.get("/getbook/:query", function(req, res) {
     //retrieve data from Google Books API using the query URL parameter  
 
     var options = {
 
-      limit: 1
+      limit: 5
 
     };
 
