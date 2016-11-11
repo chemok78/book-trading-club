@@ -83,6 +83,50 @@ angular.module("booksApp", ['ngRoute'])
         
     };//this.editUser
     
+    this.editRequests = function(requestObject){
+        
+      return $http.post("/editrequests", requestObject)
+        .then(function(response){
+            
+            return response;
+            
+        }, function(response){
+            
+            console.log("Error editing request object");
+            
+        });
+        
+    };
+    
+    this.editRequested = function(requestedObject){
+        
+        return $http.post("/editrequested", requestedObject)
+            .then(function(response){
+                
+                return response;
+                
+            }, function(response){
+                
+                console.log("Error editing requested object");
+            });
+    };
+    
+    
+    this.acceptRequests = function(bookObject){
+      
+      return $http.post("/acceptrequests", bookObject)
+            .then(function(response){
+                
+                return response;
+                
+            }, function(response){
+                
+                console.log("error accepting requests by calling RESTful API");
+                
+            })
+        
+    };
+    
 })
 .controller("mainController", function($scope, $rootScope, Login){
 //Main controller is loaded on page load or after Passport login    
@@ -136,7 +180,7 @@ angular.module("booksApp", ['ngRoute'])
     console.log("home controller!");
     
 })
-.controller('MyBooksController', function($scope, Books){
+.controller('MyBooksController', function($scope, $window,Books, Users){
 //controller for the Mybooks profile page
 
         $scope.retrieveBooks = function(query){
@@ -221,10 +265,39 @@ angular.module("booksApp", ['ngRoute'])
             
             
         };
+        
+        //Accept trade request here
+        
+        $scope.acceptRequest = function(book){
+        //we have the the bookObject from the scope:
+            //book.author
+            //book.title
+            //book.requestName
+            //book.requestID
+            //book.bookOffer: description, link, thumbnail, auhtors, title
+        //we have the req.user.id in Node JS server side
+        
+        //Logged in User: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "Accepted" (default is pending)
+        //User with book: look user up in DB with book.requestID 1) check traderequested: find title change property Status: to "Accepted" (default is pending)
+            
+            Users.acceptRequests(book)
+                .then(function(response){
+                    
+                    console.log(response.data);
+                    
+                    $window.location.reload();
+                    
+                }, function(response){
+                    
+                    console.log("Error updating database with acceptRequest");      
+                    
+                });
+            
+        };
 
     
 })
-.controller('AllBooksController', function($scope, Books){
+.controller('AllBooksController', function($scope, $window,Books, Users){
     
     Books.allBooks()
     //use allBooks to call server side RESTful API to retrieve all books in database
@@ -240,10 +313,83 @@ angular.module("booksApp", ['ngRoute'])
             
             console.log("Error retrieving all books");
             
-        })
-    
-    
-    
+        });
+        
+       $scope.setBook = function(book){
+       //set the book that is selected from all books list the user wants to trade    
+           $scope.tradeBook = book;
+           
+       };
+       
+       $scope.sendTrade = function(trade){
+       //function to actually send a trade request       
+       //$scope.userObject is current set and all books   
+       //$scope.tradeBook is book of other user to be traded
+       //trade is the book I want to trade
+          
+       console.log(trade);
+           
+       //construct request object for the user that owns the book
+       
+       var requestObject = {};
+
+       requestObject.requestID = $scope.userObject.id;
+       //the user id that requests the trade
+       requestObject.requestName = $scope.userObject.name;
+       //the user name that requests the trade
+       requestObject.title = $scope.tradeBook.title;
+       //the title of the book that is requested to trade
+       requestObject.author = $scope.tradeBook.authors[0];
+       //the author of the book that is requested to trade
+       requestObject.bookOffer = trade ;
+       requestObject.ownerID = $scope.tradeBook.id;
+       requestObject.ownerName = $scope.tradeBook.name;
+       requestObject.status = "pending";
+       
+       console.log(requestObject);
+       
+       
+       Users.editRequests(requestObject)
+            .then(function(response){
+             
+                console.log("Successfully send trade request to user");
+                
+            }, function(response){
+                
+                console.log("Error editing request object");
+                
+            });
+            
+       //construct requestedObject for user that wants to trade the book
+               
+       var requestedObject = {};
+       
+       requestedObject.title = $scope.tradeBook.title;
+       //the book title the user wants to trade
+       requestedObject.author = $scope.tradeBook.authors[0];
+       requestedObject.bookOffer = trade;
+       requestedObject.ownerID = $scope.tradeBook.id;
+       requestedObject.ownerName = $scope.tradeBook.name;
+       requestedObject.status = "pending";
+      
+       Users.editRequested(requestedObject)
+            .then(function(response){
+                
+                $scope.userObject = response.data.value;
+                
+                $window.location.reload();
+                
+                
+            }, function(response){
+                
+                console.log("Error adding trade request to my database");
+                
+            });
+            
+       
+       
+       }; //$scope.sendTrade
+       
     
 })
 .controller('ProfileController', function($scope, Users){

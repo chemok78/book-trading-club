@@ -123,7 +123,9 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
            
            userObject.city = "";
            userObject.state = "";
-           userObject.books = [];  
+           userObject.books = []; 
+           userObject.traderequests = [];
+           userObject.traderequested = [];
             
             db.collection(BOOKS_COLLECTION).insertOne(userObject, function(err,doc){
             //insert user in database
@@ -328,6 +330,188 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
       }
       
     });//db.collection
+    
+  });
+  
+  app.post("/editrequests", function(req,res){
+  //called from Users.editRequests method to add/remove trade requests  
+  //req.body is requestObject with the info for the trade
+    
+    db.collection(BOOKS_COLLECTION).findOne({id: req.body.ownerID}, function(err,doc){
+    //find the user object in database
+    
+      if(err){
+        
+        console.log("Could not find user");
+        
+      } else {
+        
+        var userID = req.body.ownerID;
+        
+        delete req.body.ownerID;
+        //delete the user ID from requestObject to be inserted in DB
+        delete req.body.ownerName;
+        //delete the user name from requestObject to be inserted in DB
+        
+        doc.traderequests.push(req.body);
+        
+        var updateDoc = doc;
+        
+        db.collection(BOOKS_COLLECTION).updateOne({id: userID}, updateDoc, function(err,doc){
+          
+          if(err){
+            
+            console.log(err);
+            
+          } else {
+            
+            res.status(200).end();
+            
+          }
+          
+        });
+        
+      }
+      
+    });
+    
+    
+  });
+  
+  app.post("/editrequested", function(req,res){
+  //called from Users.editRequested method to add/remove trade requests  
+  //req.body is requestedObject with the info for the trade
+  
+  console.log("checking req.user");
+  console.log(req.user);
+    
+    /*db.collection(BOOKS_COLLECTION).findOne({id:req.user.id}, function(err,doc){
+      
+      if(err){
+        
+        console.log("Could not find user");
+        
+      } else {
+        
+        doc.traderequested.push(req.body);
+        
+        var updateDoc = doc;
+        
+        db.collection(BOOKS_COLLECTION).updateOne({id:req.user.id}, updateDoc, function(err, doc){
+          
+          if(err){
+            
+            console.log(err);
+            
+          } else {
+            
+            res.status(200).json(doc);
+            
+          }
+          
+          
+        });
+        
+      }
+      
+      
+    });*/
+    
+    db.collection(BOOKS_COLLECTION).findAndModify(
+    {id: req.user.id},
+    [['_id','asc']],
+    {$push: {traderequested: req.body}},
+    {new:true}, function(err, doc){
+      
+      if(err){
+        
+        console.log(err);
+        
+      } else {
+        
+        console.log("database findandmodify successfull!");
+        console.log(doc);
+        
+        res.status(200).json(doc);
+        
+        
+      }
+      
+      
+    });
+    
+  });
+  
+  app.post("/acceptrequests", function(req,res){
+    
+    //we have the the bookObject from the scope:
+            //book.author
+            //book.title
+            //book.requestName
+            //book.requestID
+            //book.bookOffer: description, link, thumbnail, auhtors, title
+        //we have the req.user.id in Node JS server side
+        
+        //I am JM
+        //To try with CM
+    
+  //Logged in User (JM)/user with book: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "Accepted" (default is pending)
+  
+  console.log(req.body.title);
+  
+  db.collection(BOOKS_COLLECTION).update(
+    
+  {id: req.user.id, "traderequests.title": req.body.title},
+  //find the document belonging to req.user.id
+  //find in requests array the element that has title same as req.body.title
+  
+  {$set: 
+  
+    {"traderequests.$.status": "accepted"}
+    
+  }, function(err,doc){
+    
+    
+    if(err){
+      
+      console.log(err);
+      
+    } else {
+      
+      console.log("successfully updated status");
+      
+      
+    }
+    
+  });
+  
+  
+  db.collection(BOOKS_COLLECTION).update(
+  //User with request, wants to trade: Look up in DB with requestID: 1) check traderequested: find title: change status  
+    
+    {id: req.body.requestID, "traderequested.title": req.body.title },
+    
+    {$set: 
+      
+      {"traderequested.$.status": "accepted"}
+      
+    }, function(err,doc){
+      
+      if(err){
+        
+        console.log(err);
+      
+      } else {
+        
+        res.status(200).json(doc);
+        
+      }
+      
+      
+    });
+  
+    
+    
     
   });
   
