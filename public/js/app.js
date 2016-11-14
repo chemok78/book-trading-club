@@ -123,9 +123,23 @@ angular.module("booksApp", ['ngRoute'])
                 
                 console.log("error accepting requests by calling RESTful API");
                 
-            })
+            });
         
     };
+    
+    this.declineRequests = function(bookObject){
+        
+        return $http.post("/declinerequests", bookObject)
+            .then(function(response){
+                
+                return response;
+                
+            }, function(response){
+                
+                console.log("error declining requests by calling RESTful API");
+            });
+        
+    }
     
 })
 .controller("mainController", function($scope, $rootScope, Login){
@@ -290,6 +304,34 @@ angular.module("booksApp", ['ngRoute'])
                 }, function(response){
                     
                     console.log("Error updating database with acceptRequest");      
+                    
+                });
+            
+        };
+        
+        $scope.declineRequest = function(book){
+            //we have the the bookObject from the scope:
+            //book.author
+            //book.title
+            //book.requestName
+            //book.requestID
+            //book.bookOffer: description, link, thumbnail, auhtors, title
+            //we have the req.user.id in Node JS server side    
+        
+            Users.declineRequests(book)
+            //Logged in User: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "Accepted" (default is pending)
+            //User with book: look user up in DB with book.requestID 1) check traderequested: find title change property Status: to "Accepted" (default is pending)
+            
+                .then(function(response){
+                    
+                    console.log(response.data);
+                    
+                    $window.location.reload();
+                    
+                    
+                }, function(response){
+                    
+                    console.log("error updating database with declineRequest");
                     
                 });
             

@@ -450,10 +450,8 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
             //book.requestName
             //book.requestID
             //book.bookOffer: description, link, thumbnail, auhtors, title
-        //we have the req.user.id in Node JS server side
+            //we have the req.user.id 
         
-        //I am JM
-        //To try with CM
     
   //Logged in User (JM)/user with book: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "Accepted" (default is pending)
   
@@ -511,9 +509,70 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     });
   
     
-    
-    
   });
+  
+  app.post("/declinerequests", function(req,res){
+    
+    
+    console.log(req.body.title);
+    
+    //Logged in User (JM)/user with book: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "declined" (default is pending)
+    
+    db.collection(BOOKS_COLLECTION).update(
+     //we have the the bookObject from the scope:
+     //book.author
+     //book.title
+     //book.requestName
+     //book.requestID
+     //book.bookOffer: description, link, thumbnail, auhtors, title
+     //we have the req.user.id 
+     
+     {id: req.user.id, "traderequests.title": req.body.title},
+     
+     {$set:
+     
+        {"traderequests.$.status": "declined" }
+     
+     }, function(err,doc){
+       
+       if(err){
+         
+         console.log(err);
+         
+       } else {
+         
+         console.log("successfully declined trade requets");
+         
+       }
+       
+       
+     });//db.collection(BOOKS_COLLECTION).update 
+    
+    
+    db.collection(BOOKS_COLLECTION).update(
+      
+      {id:req.body.requestID, "traderequested.title":req.body.title},
+      
+      {$set:
+        
+        {"traderequested.$.status": "declined"}
+        
+      }, function(err,doc){
+        
+        if(err){
+          
+          console.log(err);
+          
+        } else {
+          
+          res.status(200).json(doc);
+          
+        }
+        
+      }); //db.collection(BOOKS_COLLECTION).update
+    
+    
+  }); //app.post("/declinerequests"
   
   app.post("/updatebooks", function(req,res){
   //called from Books service and MyBooks controller

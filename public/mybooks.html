@@ -15,7 +15,7 @@
                     <p style="color:red"><strong>Status: {{request.status}}</strong></p>
                     <!--<p>Description: {{request.bookOffer.description}}</p>-->
                     <button type="submit" class="btn btn-default btn-primary" ng-click="acceptRequest(request)">Accept Request</button>
-                     <button type="submit" class="btn btn-default btn-warning" ng-click="removeBook(book)">Decline Request</button>
+                     <button type="submit" class="btn btn-default btn-warning" ng-click="declineRequest(request)">Decline Request</button>
                 </li>
             </ul>
         </div>
@@ -33,7 +33,7 @@
                     <p>My Book Author to trade: {{request.bookOffer.authors[0]}}</p>
                     <p style="color:red"><strong>Status: {{request.status}}</strong></p>
                     <!--<p>Description: {{request.bookOffer.description}}</p>-->
-                    <button type="submit" class="btn btn-default btn-warning" ng-click="removeBook(book)">Pending</button>
+                    <button type="submit" class="btn btn-default btn-warning" ng-click="removeBook(book)">Cancel Request</button>
                 </li>
             </ul>
         </div>
