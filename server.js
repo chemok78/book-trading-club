@@ -99,7 +99,7 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: process.env.FACEBOOK_CALLBACK_DEV
+    callbackURL: process.env.FACEBOOK_CALLBACK_PRODUCTION
 
   }, function(accessToken, refreshToken, user, done) {
     //callback function after successful login
@@ -190,7 +190,7 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
   app.get('/auth/facebook/callback', passport.authenticate('facebook', {
     //Handle callback after successfully authenticated with Facebook  
 
-    successRedirect: process.env.FACEBOOK_SUCCESS_REDIRECT_DEVELOPMENT,
+    successRedirect: process.env.FACEBOOK_SUCCESS_REDIRECT_PRODUCTION,
 
     failureRedirect: '/error'
 
