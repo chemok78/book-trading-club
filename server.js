@@ -105,74 +105,56 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     //callback function after successful login
 
     process.nextTick(function() {
-      
-      db.collection(BOOKS_COLLECTION).findOne({id: user.id}, function(err,doc){
-      //check if user exists in database, find with user.id  
-        
-        if(err){
-        //error handling finding user in database
-        
+
+      db.collection(BOOKS_COLLECTION).findOne({
+        id: user.id
+      }, function(err, doc) {
+        //check if user exists in database, find with user.id  
+
+        if (err) {
+          //error handling finding user in database
+
           console.log("error finding user in database");
-          
+
         } else {
-          
-          if(doc == null){
-          //if doc from reading database is null, user does not exist yet in DB
-          
-           var userObject = user._json;
-           
-           userObject.city = "";
-           userObject.state = "";
-           userObject.books = []; 
-           userObject.traderequests = [];
-           userObject.traderequested = [];
-            
-            db.collection(BOOKS_COLLECTION).insertOne(userObject, function(err,doc){
-            //insert user in database
-            
-              if(err){
-                
+
+          if (doc == null) {
+            //if doc from reading database is null, user does not exist yet in DB
+
+            var userObject = user._json;
+
+            userObject.city = "";
+            userObject.state = "";
+            userObject.books = [];
+            userObject.traderequests = [];
+            userObject.traderequested = [];
+
+            db.collection(BOOKS_COLLECTION).insertOne(userObject, function(err, doc) {
+              //insert user in database
+
+              if (err) {
+
                 console.log("error inserting user in database");
-                
-              } else{
-                
+
+              } else {
+
                 console.log("user inserted in database");
-                
+
               }
-              
-              
+
+
             }); // db.collection(BOOKS_COLLECTION).insertOne
-            
+
           } //if (doc == null)
-          
+
         } //if, else
-        
-        
+
+
       }); // db.collection(BOOKS_COLLECTION).findOne
 
       done(null, user);
       //return user profile after successfull login
       //if the credentials are valid, the verify callback invokes done to supply Passport with the user that authenticated.
-
-      /*
-      {
-        _id: '',
-        id: '',
-        displayName: 'Che Mok',
-        state: '',
-        city: '',
-        books: [
-          
-          {title: 'javascript', author: 'John Doe', thumbnail: ''},
-          
-          {title: 'javascript', author: 'John Doe', thumbnail: ''}
-          
-        
-        ]
-        
-      }
-     
-      */
 
     }); //process.nextTick
 
@@ -183,10 +165,6 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     //save user object in session
     //result of serializeUser is attached to the session as req.session.passport.user = {};   
     //http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
-
-    console.log("user serialized!");
-
-    console.log(user);
 
     done(null, user);
     //can also be done(null,user.id) if you want to save only the id
@@ -199,9 +177,6 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     //retrieve with the key given as obj parameter
     //the fetched object will be attached to req.user
 
-    console.log("user deserialized");
-
-    console.log(id);
 
     done(null, id);
 
@@ -220,24 +195,6 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     failureRedirect: '/error'
 
   }));
-
-
-
-  app.get('/test', function(req, res, next) {
-
-    //route for testing authentication  
-
-    console.log("check error");
-
-    console.log(req.user);
-
-    console.log(req.isAuthenticated());
-
-    res.send("Error logging in");
-
-
-  });
-
 
   var auth = function(req, res, next) {
     //middleware function to check if user is logged in for every Express request
@@ -272,22 +229,24 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     if (req.isAuthenticated()) {
       //a user is autenticated  
       //retrieve user object from database
-      
-      db.collection(BOOKS_COLLECTION).findOne({id: req.user.id}, function(err,doc){
-        
-        if(err){
-          
-          handleError(res,err.message, "Failed to retrieve user from database");
-          
+
+      db.collection(BOOKS_COLLECTION).findOne({
+        id: req.user.id
+      }, function(err, doc) {
+
+        if (err) {
+
+          handleError(res, err.message, "Failed to retrieve user from database");
+
         } else {
-          
+
 
           res.status(200).json(doc);
-          
-          
+
+
         }
-        
-        
+
+
       }); //db.collection(BOOKS_COLLECTION)
 
 
@@ -311,340 +270,322 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     //redirect to homepage after log out
 
   });
-  
-  app.post('/edituser', function(req,res){
-    
-    console.log(req.body);
-    
-    db.collection(BOOKS_COLLECTION).updateOne({id: req.user.id}, req.body, function(err,doc){
-      
-      if(err){
-        
-        handleError(res,err.message, "Failed to update user");
-        
-      } else{
-      
-        
-        res.status(200).end();
-        
-      }
-      
-    });//db.collection
-    
-  });
-  
-  app.post("/editrequests", function(req,res){
-  //called from Users.editRequests method to add/remove trade requests  
-  //req.body is requestObject with the info for the trade
-    
-    db.collection(BOOKS_COLLECTION).findOne({id: req.body.ownerID}, function(err,doc){
-    //find the user object in database
-    
-      if(err){
-        
-        console.log("Could not find user");
-        
+
+  app.post('/edituser', auth, function(req, res) {
+
+
+    db.collection(BOOKS_COLLECTION).updateOne({
+      id: req.user.id
+    }, req.body, function(err, doc) {
+
+      if (err) {
+
+        handleError(res, err.message, "Failed to update user");
+
       } else {
-        
+
+
+        res.status(200).end();
+
+      }
+
+    }); //db.collection
+
+  });
+
+  app.post("/editrequests", auth, function(req, res) {
+    //called from Users.editRequests method to add/remove trade requests  
+    //req.body is requestObject with the info for the trade
+
+    db.collection(BOOKS_COLLECTION).findOne({
+      id: req.body.ownerID
+    }, function(err, doc) {
+      //find the user object in database
+
+      if (err) {
+
+        console.log("Could not find user");
+
+      } else {
+
         var userID = req.body.ownerID;
-        
+
         delete req.body.ownerID;
         //delete the user ID from requestObject to be inserted in DB
         delete req.body.ownerName;
         //delete the user name from requestObject to be inserted in DB
-        
+
         doc.traderequests.push(req.body);
-        
+
         var updateDoc = doc;
-        
-        db.collection(BOOKS_COLLECTION).updateOne({id: userID}, updateDoc, function(err,doc){
-          
-          if(err){
-            
+
+        db.collection(BOOKS_COLLECTION).updateOne({
+          id: userID
+        }, updateDoc, function(err, doc) {
+
+          if (err) {
+
             console.log(err);
-            
+
           } else {
-            
+
             res.status(200).end();
-            
+
           }
-          
+
         });
-        
+
       }
-      
+
     });
-    
-    
+
+
   });
-  
-  app.post("/editrequested", function(req,res){
-  //called from Users.editRequested method to add/remove trade requests  
-  //req.body is requestedObject with the info for the trade
-  
-  console.log("checking req.user");
-  console.log(req.user);
-    
-    /*db.collection(BOOKS_COLLECTION).findOne({id:req.user.id}, function(err,doc){
-      
-      if(err){
-        
-        console.log("Could not find user");
-        
-      } else {
-        
-        doc.traderequested.push(req.body);
-        
-        var updateDoc = doc;
-        
-        db.collection(BOOKS_COLLECTION).updateOne({id:req.user.id}, updateDoc, function(err, doc){
-          
-          if(err){
-            
-            console.log(err);
-            
-          } else {
-            
-            res.status(200).json(doc);
-            
-          }
-          
-          
-        });
-        
+
+  app.post("/editrequested", auth, function(req, res) {
+    //called from Users.editRequested method to add/remove trade requests  
+    //req.body is requestedObject with the info for the trade
+
+
+    db.collection(BOOKS_COLLECTION).findAndModify({
+      id: req.user.id
+    }, [
+      ['_id', 'asc']
+    ], {
+      $push: {
+        traderequested: req.body
       }
-      
-      
-    });*/
-    
-    db.collection(BOOKS_COLLECTION).findAndModify(
-    {id: req.user.id},
-    [['_id','asc']],
-    {$push: {traderequested: req.body}},
-    {new:true}, function(err, doc){
-      
-      if(err){
-        
+    }, {
+      new: true
+    }, function(err, doc) {
+
+      if (err) {
+
         console.log(err);
-        
+
       } else {
-        
+
         console.log("database findandmodify successfull!");
-        console.log(doc);
-        
+
         res.status(200).json(doc);
-        
-        
+
+
       }
-      
-      
+
+
     });
-    
+
   });
-  
-  app.post("/acceptrequests", function(req,res){
-    
-    //we have the the bookObject from the scope:
-            //book.author
-            //book.title
-            //book.requestName
-            //book.requestID
-            //book.bookOffer: description, link, thumbnail, auhtors, title
-            //we have the req.user.id 
-        
-    
-  //Logged in User (JM)/user with book: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "Accepted" (default is pending)
-  
-  console.log(req.body.title);
-  
-  db.collection(BOOKS_COLLECTION).update(
-    
-  {id: req.user.id, "traderequests.title": req.body.title},
-  //find the document belonging to req.user.id
-  //find in requests array the element that has title same as req.body.title
-  
-  {$set: 
-  
-    {"traderequests.$.status": "accepted"}
-    
-  }, function(err,doc){
-    
-    
-    if(err){
-      
-      console.log(err);
-      
-    } else {
-      
-      console.log("successfully updated status");
-      
-      
-    }
-    
-  });
-  
-  
-  db.collection(BOOKS_COLLECTION).update(
-  //User with request, wants to trade: Look up in DB with requestID: 1) check traderequested: find title: change status  
-    
-    {id: req.body.requestID, "traderequested.title": req.body.title },
-    
-    {$set: 
-      
-      {"traderequested.$.status": "accepted"}
-      
-    }, function(err,doc){
-      
-      if(err){
-        
-        console.log(err);
-      
-      } else {
-        
-        res.status(200).json(doc);
-        
-      }
-      
-      
-    });
-  
-    
-  });
-  
-  app.post("/declinerequests", function(req,res){
-    
-    
-    console.log(req.body.title);
-    
-    //Logged in User (JM)/user with book: look myself up in DB with req.user.id. 1) check traderequests: find title: change property Status: "declined" (default is pending)
-    
+
+  app.post("/acceptrequests", auth, function(req, res) {
+
     db.collection(BOOKS_COLLECTION).update(
-     //we have the the bookObject from the scope:
-     //book.author
-     //book.title
-     //book.requestName
-     //book.requestID
-     //book.bookOffer: description, link, thumbnail, auhtors, title
-     //we have the req.user.id 
-     
-     {id: req.user.id, "traderequests.title": req.body.title},
-     
-     {$set:
-     
-        {"traderequests.$.status": "declined" }
-     
-     }, function(err,doc){
-       
-       if(err){
-         
-         console.log(err);
-         
-       } else {
-         
-         console.log("successfully declined trade requets");
-         
-       }
-       
-       
-     });//db.collection(BOOKS_COLLECTION).update 
-    
-    
-    db.collection(BOOKS_COLLECTION).update(
-      
-      {id:req.body.requestID, "traderequested.title":req.body.title},
-      
-      {$set:
-        
-        {"traderequested.$.status": "declined"}
-        
-      }, function(err,doc){
-        
-        if(err){
-          
-          console.log(err);
-          
-        } else {
-          
-          res.status(200).json(doc);
-          
+
+      {
+        id: req.user.id,
+        "traderequests.title": req.body.title
+      },
+      //find the document belonging to req.user.id
+      //find in requests array the element that has title same as req.body.title
+
+      {
+        $set:
+
+        {
+          "traderequests.$.status": "accepted"
         }
-        
-      }); //db.collection(BOOKS_COLLECTION).update
-    
-    
-  }); //app.post("/declinerequests"
-  
-  app.post("/updatebooks", function(req,res){
-  //called from Books service and MyBooks controller
-  //used for adding books + removing books as well
-    
-    db.collection(BOOKS_COLLECTION).updateOne({id:req.user.id}, req.body, function(err,doc){
-    //find user in database and replace user with userObject from front-end $scope with added book
-      
-      if(err){
-        
-        console.log("error updating user with book(s)");
-        
-      } else {
-        
-        res.status(200).end;
-        
-      }
-      
-      
-    });
-    
+
+      },
+      function(err, doc) {
+
+
+        if (err) {
+
+          console.log(err);
+
+        } else {
+
+          console.log("successfully updated status");
+
+
+        }
+
+      });
+
+
+    db.collection(BOOKS_COLLECTION).update(
+      //User with request, wants to trade: Look up in DB with requestID: 1) check traderequested: find title: change status  
+
+      {
+        id: req.body.requestID,
+        "traderequested.title": req.body.title
+      },
+
+      {
+        $set:
+
+        {
+          "traderequested.$.status": "accepted"
+        }
+
+      },
+      function(err, doc) {
+
+        if (err) {
+
+          console.log(err);
+
+        } else {
+
+          res.status(200).json(doc);
+
+        }
+
+
+      });
+
+
   });
-  
-  app.get('/getallbooks', function(req,res){
-    
+
+  app.post("/declinerequests", auth, function(req, res) {
+
+
+    db.collection(BOOKS_COLLECTION).update(
+
+      {
+        id: req.user.id,
+        "traderequests.title": req.body.title
+      },
+
+      {
+        $set:
+
+        {
+          "traderequests.$.status": "declined"
+        }
+
+      },
+      function(err, doc) {
+
+        if (err) {
+
+          console.log(err);
+
+        } else {
+
+          console.log("successfully declined trade requets");
+
+        }
+
+
+      }); //db.collection(BOOKS_COLLECTION).update 
+
+
+    db.collection(BOOKS_COLLECTION).update(
+
+      {
+        id: req.body.requestID,
+        "traderequested.title": req.body.title
+      },
+
+      {
+        $set:
+
+        {
+          "traderequested.$.status": "declined"
+        }
+
+      },
+      function(err, doc) {
+
+        if (err) {
+
+          console.log(err);
+
+        } else {
+
+          res.status(200).json(doc);
+
+        }
+
+      }); //db.collection(BOOKS_COLLECTION).update
+
+
+  }); //app.post("/declinerequests"
+
+  app.post("/updatebooks", function(req, res) {
+    //called from Books service and MyBooks controller
+    //used for adding books + removing books as well
+
+    db.collection(BOOKS_COLLECTION).updateOne({
+      id: req.user.id
+    }, req.body, function(err, doc) {
+      //find user in database and replace user with userObject from front-end $scope with added book
+
+      if (err) {
+
+        console.log("error updating user with book(s)");
+
+      } else {
+
+        res.status(200).end;
+
+      }
+
+
+    });
+
+  });
+
+  app.get('/getallbooks', function(req, res) {
+
     //retrieve all documents from collection in database
-    
+
     //return that to front end and bind to scope
-    
-    db.collection(BOOKS_COLLECTION).find({}).toArray(function(err,doc){
-      
-      if(err){
-        
+
+    db.collection(BOOKS_COLLECTION).find({}).toArray(function(err, doc) {
+
+      if (err) {
+
         console.log("Error retrieving all books");
-        
+
       } else {
         //loop through doc array, every element/item is a userObject
-        
-        var booksArray = [ ];
-        
-        doc.forEach(function(item, index){
-        //every item is a userObject  
-          
+
+        var booksArray = [];
+
+        doc.forEach(function(item, index) {
+          //every item is a userObject  
+
           var booksObject = {};
-          
-          if(item.books.length > 0){
-          //loop through the books array of every user if it's not empty
-          
-            for(var i= 0; i < item.books.length; i++){
-            
-               booksObject = item.books[i];
-               //set booksObject to item.books from userObject
-               booksObject.id = item.id;
-               //add id from userObject to booksObject
-               booksObject.name = item.name;
-               //add name from userObject to booksObject
-               
-               booksArray.push(booksObject);
-            
-            }//  for(var i= 0; i < item.books.length
-          
-         } //if(item.books.length > 0
-          
+
+          if (item.books.length > 0) {
+            //loop through the books array of every user if it's not empty
+
+            for (var i = 0; i < item.books.length; i++) {
+
+              booksObject = item.books[i];
+              //set booksObject to item.books from userObject
+              booksObject.id = item.id;
+              //add id from userObject to booksObject
+              booksObject.name = item.name;
+              //add name from userObject to booksObject
+
+              booksArray.push(booksObject);
+
+            } //  for(var i= 0; i < item.books.length
+
+          } //if(item.books.length > 0
+
         }); //doc.forEach(function(item, index)
-        
+
         res.status(200).json(booksArray);
-        
+
       } //if, else
-      
+
     }); //db.collection(BOOKS_COLLECTION)
-    
-    
+
+
   }); //app.get('/getallbooks'
 
   app.get("/getbook/:query", function(req, res) {
@@ -668,16 +609,10 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
         res.status(200).json(results);
 
-
       }
-
 
     });
 
-
-
   });
 
-
 }); //mongodb.MongoCLient.connect
-

@@ -3,18 +3,14 @@
 <!--$scope.tradeBook selected book to trade set in AllBooksController-->
 <div class="container">
     <h2>All Books</h2>
-    <p>Book to trade: {{tradeBook}}</p>
-    <p>{{userObject}}</p>
     <hr>
         <ul class="list-group">
             <li ng-repeat="book in allUserBooks" class="list-group-item">
+                <h4><a href="{{book.link}}" target="_blank" >{{book.title}}</a></h4>
                 <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
-                <a href="{{book.link}}" target="_blank" >{{book.title}}</a>
-                </br>
+                <h5>Author: {{book.authors[0]}}</h5>
                 <p>Description: {{book.description}}</p>
-                <p>Author: {{book.authors[0]}}</p>
-                <p>Belongs to: {{book.name}}</p>
-                <p>Belongs to: {{book.id}}</p>
+                <p>Owner: {{book.name}}</p>
                 <button type="button" class="btn btn-default btn-warning" data-toggle="modal" data-target="#myModal" ng-click="setBook(book)">Trade Book</button>
             </li>
         </ul>

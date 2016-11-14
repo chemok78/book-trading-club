@@ -3,7 +3,27 @@
         <div class="container">
             <h2>Welcome to Bookie</h2>
             <p>The easiest way to trade books</p>
-            <p><a class="btn btn-primary btn-lg" role="button">Sign Up</a></p>
+            <p ng-hide="loggedIn === true"><a class="btn btn-primary btn-lg" href="/auth/facebook" target="_top" role="button">Login with Facebook</a></p>
         </div>
     </div>
+    
+       <div class="container marketing">
+      <!-- Three columns of text below the carousel -->
+      <div class="row">
+        <div class="col-lg-4">
+          <i class="fa fa-sign-in icon-home" style="font-size:64px; color:#e67e22"></i>
+          <h2>No Sign Up</h2>
+          <p>Start adding and trading books within a minite. Just log in with your Facebook account and start trading books. No passwords required.</p>
+        </div><!-- /.col-lg-4 -->
+        <div class="col-lg-4">
+          <i class="fa fa-bookmark icon-home" style="font-size:64px; color:#e67e22"></i>
+          <h2>Add Book Info with 1 Click</h2>
+          <p>No need to manually enter descriptions or add photo's. Everything happens in a few clicks and you are on your way to add, trade and accept trades.</p>
+        </div><!-- /.col-lg-4 -->
+        <div class="col-lg-4">
+          <i class="fa fa-google icon-home" style="font-size:64px; color:#e67e22"></i>
+          <h2>Huge Collection</h2>
+          <p>We use the massive Google Books API. Any book you want to add, we have it.</p>
+        </div><!-- /.col-lg-4 -->
+      </div><!-- /.row -->
 </div>

@@ -43,31 +43,43 @@
             <div class="form-group">
                 <input type="text" class="form-control" id="bookInput" placeholder="Enter book to add" ng-model="bookQuery">
             </div>
-            <button type="submit" class="btn btn-default btn-primary" ng-click="retrieveBooks(bookQuery)">Search For Books</button>
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModal" ng-click="retrieveBooks(bookQuery)">Search For Books</button>
         </form>
     <hr> 
-    <div class="row">
-         <div class="col-md-6 container">
+    <div class="container">
             <h4>Your Books</h4>
              <ul class="list-group">
                 <li ng-repeat="book in userObject.books" class="list-group-item">
+                     <h4><a href="{{book.link}}" target="_blank" >{{book.title}}</a></h4>
+                    </br>
                     <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
-                    <a href="{{book.link}}" target="_blank" >{{book.title}}</a>
-                    <p>Author: {{book.authors[0]}}</p>
+                    <h5>Author: {{book.authors[0]}}</h5>
+                    <p><strong>Description</strong>: {{book.description}}</p>
                     <button type="submit" class="btn btn-default btn-warning" ng-click="removeBook(book)">Delete Book</button>
                 </li>
             </ul>
-        </div>
-        <div class="col-md-6 container">
-                <h4>Books you can add (Use search above)</h4>
-                <ul class="list-group">
+    </div>
+    
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Choose one of the books below to add</h4>
+            </div>
+            <div class="modal-body">
+               <ul class="list-group">
                 <li ng-repeat="book in books" class="list-group-item">
-                    <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
                     <a href="{{book.link}}" target="_blank" >{{book.title}}</a>
+                    <img src="{{book.thumbnail}}" class="img-thumbnail img-responsive img-rounded">
                     <p>Author: {{book.authors[0]}}</p>
                     <button type="submit" class="btn btn-default btn-primary" ng-click="addBook(book)">Add Book</button>
                 </li>
             </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
         </div>
     </div>
 
